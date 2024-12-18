@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Recommendation Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Input Project Features</h2>
+        <form action="{{ url_for('predict_project')}}" method="POST">
+            <!-- <div class="form-group">
+                <label for="project-name">Project Name</label>
+                <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
+            </div>
+            <div class="form-group">
+                <label for="project-description">Project Description</label>
+                <textarea id="project-description" name="project_description" placeholder="Enter project description" required></textarea>
+            </div> -->
+            <div class="form-group">
+                <label for="skills">Skills Required</label>
+                <input type="text" id="skills" name="skills" placeholder="Enter skills required" required>
+            </div>
+            <div class="form-group">
+                <label for="framework">Framework</label>
+                <input type="text" id="framework" name="framework" placeholder="Enter framework used">
+            </div>
+            <div class="form-group">
+                <label for="tools">Tools & Technologies</label>
+                <input type="text" id="tools" name="tools" placeholder="Enter tools and technologies">
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" placeholder="Enter categorized category">
+            </div>
+            <div class="form-group">
+                <label for="domain">Domain</label>
+                <input type="text" id="domain" name="domain" placeholder="Enter categorized domain">
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <h2>
+        Project -> {{results[0]}}
+        Project_Description -> {{results[1]}}
+     </h2>
+
+</body>
+</html>

@@ -3,4 +3,7 @@ pandas
 seaborn
 matplotlib
 jupyter
--e .
+nltk
+scikit-learn
+Flask
+# -e .
