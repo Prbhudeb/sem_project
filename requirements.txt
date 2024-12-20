@@ -6,4 +6,4 @@ jupyter
 nltk
 scikit-learn
 Flask
-# -e .
+-e .
