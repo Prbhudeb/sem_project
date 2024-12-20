@@ -19,7 +19,7 @@ def get_requirements(file_path:str)->List[str]:
 setup(
 name='semester_project',
 version='0.0.1',
-author='Prabhu',
+author="Parbati_ma'am",
 author_email='prabhudev182002@gmail.com',
 packages=find_packages(),
 install_requires=get_requirements('requirements.txt')

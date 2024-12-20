@@ -36,6 +36,8 @@ class Model_Making:
             # Get processed data
             self.processed_data = preprocessor.processing_data()
             logging.info(f"Processed data shape: {self.processed_data.shape}")
+            
+            self.processed_data = self.processed_data.reset_index(drop=True)
 
             # Initialize and fit CountVectorizer
             self.count_vectorizer = CountVectorizer(
