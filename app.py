@@ -1,64 +1,59 @@
-from flask import Flask,request,render_template
-import numpy as np
-import pandas as pd
+from flask import Flask, request, render_template
+import sys
 
-from nltk.stem.porter import PorterStemmer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from src.exception import CustomException
+from src.components.prepare_similarity_matrix import Model_Making
 
-from src.components import model_making
-from src.components import preprocessing
+application = Flask(__name__)
+app = application
 
-ps = PorterStemmer()
-cv = CountVectorizer(max_features=1100,stop_words='english')
-
-application=Flask(__name__)
-
-app=application
-
-## Route for a home page
+# Initialize model once
+model_maker = Model_Making()
+model_maker.model_building()
 
 @app.route('/')
 def index():
-    return render_template('index.html') 
+    return render_template('home.html')
 
-@app.route('/predict_project',methods=['GET','POST'])
+@app.route('/predict_project', methods=['GET','POST'])
 def predict_project():
-    if request.method=='GET':
-        return render_template('index.html')
-    else:
-        input_skills=[request.form.get('skills').split(",")]
-        input_framework=[request.form.get('framework').split(",")]
-        input_tools=[request.form.get('tools').split(",")]
-        input_category=[request.form.get('category').split(",")]
-        input_domain=[request.form.get('domain').split(",")]
+    try:
+        if request.method == 'GET':
+            return render_template('index.html')
+        else:
+            # Collect input attributes
+            input_skills = request.form.get('skills', '').split(",") if request.form.get('skills') else []
+            input_framework = request.form.get('framework', '').split(",") if request.form.get('framework') else []
+            input_tools = request.form.get('tools', '').split(",") if request.form.get('tools') else []
+            input_category = request.form.get('category', '').split(",") if request.form.get('category') else []
+            input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
 
-        input_tags_list = []
-    
-        # Add input attributes to input tags
-        for attr in [input_skills, input_framework, input_tools, input_category, input_domain]:
-            if attr:
-                input_tags_list.extend([str(x).lower() for x in attr])
-        
-        # Stem input tags
-        stemmed_input_tags = " ".join([ps.stem(tag) for tag in input_tags_list])
+            # Get recommendations
+            results = model_maker.recommend_projects(
+                input_skills=input_skills,
+                input_framework=input_framework,
+                input_tools=input_tools,
+                input_category=input_category,
+                input_domain=input_domain
+            )
+            # for i, recommendation in enumerate(results, start=1):
+            #     print(f"Recommendation {i}:")
+            #     print(f"Project Name: {recommendation[0]}")
+            #     print(f"Project Description: {recommendation[1]}")
+            #     print("-" * 40)  # Separator for better readability
+            # return render_template('index.html', project=results[0],description = results[1])
 
-        # Vectorize input tags using the same vectorizer
-        input_vector = cv.transform([stemmed_input_tags]).toarray()
-        
-        vector = model_making.Model_Making()
-        processed_data = preprocessing.Preprocessing()
+            if results:
+                return render_template('index.html', 
+                                     project=results[0],
+                                     description=results[1])
+            else:
+                return render_template('index.html', 
+                                     project="No matching projects found",
+                                     description="")
 
-        # Calculate cosine similarity between input vector and all project vectors
-        similarities = cosine_similarity(input_vector, vector)[0]
-        index = sorted(list(enumerate(similarities[0])),reverse=True, key = lambda x:x[1])[1][0]
-        project_name = preprocessing.Preprocessing().loc[index, 'Project Name']
-        project_description = processed_data.loc[index, 'Project Description']
+    except Exception as e:
+        raise CustomException(e, sys)
 
-        results =  [project_name,project_description]
-
-        return render_template('index.html',results=results)
-    
-
-if __name__=="__main__":
-    app.run(host="0.0.0.0")        
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)

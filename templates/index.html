@@ -74,7 +74,7 @@
 <body>
     <div class="form-container">
         <h2>Input Project Features</h2>
-        <form action="{{ url_for('predict_project')}}" method="POST">
+        <form action="/predict_project" method="POST">
             <!-- <div class="form-group">
                 <label for="project-name">Project Name</label>
                 <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
@@ -110,9 +110,13 @@
     </div>
 
     <h2>
-        Project -> {{results[0]}}
-        Project_Description -> {{results[1]}}
-     </h2>
+        {% if project %}
+        <div>
+            <h3>{{ project }}</h3>
+            <p>{{ description }}</p>
+        </div>
+        {% endif %}
+    </h2>
 
 </body>
 </html>
