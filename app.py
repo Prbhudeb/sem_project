@@ -208,45 +208,45 @@ def ml_api(username):
 #     return jsonify(final_results)
 
 
-# @app.route('/predict_project', methods=['GET','POST'])
-# def predict_project():
-#     try:
-#         if request.method == 'GET':
-#             return render_template('index.html')
-#         else:
-#             # Collect input attributes
-#             input_skills = request.form.get('skills', '').split(",") if request.form.get('skills') else []
-#             input_framework = request.form.get('framework', '').split(",") if request.form.get('framework') else []
-#             input_tools = request.form.get('tools', '').split(",") if request.form.get('tools') else []
-#             input_category = request.form.get('category', '').split(",") if request.form.get('category') else []
-#             input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
+@app.route('/predict_project', methods=['GET','POST'])
+def predict_project():
+    try:
+        if request.method == 'GET':
+            return render_template('index.html')
+        else:
+            # Collect input attributes
+            input_skills = request.form.get('skills', '').split(",") if request.form.get('skills') else []
+            input_framework = request.form.get('framework', '').split(",") if request.form.get('framework') else []
+            input_tools = request.form.get('tools', '').split(",") if request.form.get('tools') else []
+            input_category = request.form.get('category', '').split(",") if request.form.get('category') else []
+            input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
 
-#             # Get recommendations
-#             results = model_maker.recommend_projects(
-#                 input_skills=input_skills, #programming_language
-#                 input_framework=input_framework,#frameworks
-#                 input_tools=input_tools,#cloud_and_database
-#                 input_category=input_category,#interest_field
-#                 input_domain=input_domain #interest_domain
-#             )
-#             # for i, recommendation in enumerate(results, start=1):
-#             #     print(f"Recommendation {i}:")
-#             #     print(f"Project Name: {recommendation[0]}")
-#             #     print(f"Project Description: {recommendation[1]}")
-#             #     print("-" * 40)  # Separator for better readability
-#             # return render_template('index.html', project=results[0],description = results[1])
+            # Get recommendations
+            results = model_maker.recommend_projects(
+                input_skills=input_skills, #programming_language
+                input_framework=input_framework,#frameworks
+                input_tools=input_tools,#cloud_and_database
+                input_category=input_category,#interest_field
+                input_domain=input_domain #interest_domain
+            )
+            # for i, recommendation in enumerate(results, start=1):
+            #     print(f"Recommendation {i}:")
+            #     print(f"Project Name: {recommendation[0]}")
+            #     print(f"Project Description: {recommendation[1]}")
+            #     print("-" * 40)  # Separator for better readability
+            # return render_template('index.html', project=results[0],description = results[1])
 
-#             if results:
-#                 return render_template('index.html', 
-#                                      project=results[0],
-#                                      description=results[1])
-#             else:
-#                 return render_template('index.html', 
-#                                      project="No matching projects found",
-#                                      description="")
+            if results:
+                return render_template('index.html', 
+                                     project=results[0],
+                                     description=results[1])
+            else:
+                return render_template('index.html', 
+                                     project="No matching projects found",
+                                     description="")
 
-#     except Exception as e:
-#         raise CustomException(e, sys)
+    except Exception as e:
+        raise CustomException(e, sys)
 
 if __name__ == "__main__":
     # user_data1,user_data2 = fetch_user_data("rashi@18")
