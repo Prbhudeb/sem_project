@@ -57,7 +57,7 @@ def fetch_user_data(username):
 
             # Query to fetch user profile data
             query2 = "SELECT * FROM rec_system_userprofiledata WHERE user_id = %s"
-            cursor.execute(query2, (user_data1['id'],))
+            cursor.execute(query2, (username,))
             user_data2 = cursor.fetchone()
             logging.info(f"User profile data fetched: {user_data2}")
 
@@ -186,7 +186,6 @@ def ml_api(username):
 # @app.route('/ml_api/<string:username>')
 # def ml_api(username):
 #     user_data1,user_data2 = fetch_user_data(username)
-
 #     interest_field = user_data2['interest_field']
 #     interest_domain = user_data2['interest_domain']
 #     programming_language = user_data2['programming_language']
@@ -249,7 +248,4 @@ def predict_project():
         raise CustomException(e, sys)
 
 if __name__ == "__main__":
-    # user_data1,user_data2 = fetch_user_data("rashi@18")
-    # print(user_data1)
-    # print(user_data2)
     app.run(host="0.0.0.0", debug=True)
