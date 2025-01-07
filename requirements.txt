@@ -6,4 +6,8 @@ jupyter
 nltk
 scikit-learn
 Flask
+flask_sqlalchemy
+# sudo apt install postgresql postgresql-contrib libpq-dev [do this first]
+psycopg2
+python-dotenv
 -e .
