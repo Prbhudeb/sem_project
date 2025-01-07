@@ -62,7 +62,7 @@ def fetch_user_data(username):
             logging.info(f"User profile data fetched: {user_data2}")
 
             if not user_data2:
-                logging.warning(f"No profile data found for user ID: {user_data1['id']}")
+                logging.warning(f"No profile data found for user ID: {username}")
 
             return user_data1, user_data2
 
@@ -82,41 +82,6 @@ def fetch_user_data(username):
         if connection:
             connection.close()
             logging.info("Database connection closed.")
-
-
-# def connect_to_database():
-#     try:
-#         connection = psycopg2.connect(**DATABASE_CONFIG)
-#         return connection
-#     except psycopg2.Error as e:
-#         print(f"Error connecting to the database: {e}")
-#         return None
-
-# # Fetch user data by username
-# def fetch_user_data(username):
-#     connection = connect_to_database()
-#     if not connection:
-#         return {"error": "Failed to connect to the database"}
-    
-#     try:
-#         with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-#             query1 = "SELECT id, username, email, first_name, last_name FROM auth_user WHERE username = %s"
-#             cursor.execute(query1, (username,))
-#             user_data1 = cursor.fetchone() 
-#             query2 = "SELECT * FROM rec_system_userprofiledata WHERE user_id = %s"
-
-#             cursor.execute(query2, (username,))
-#             user_data2 = cursor.fetchone() 
-#             if user_data1:
-#                 return user_data1, user_data2
-#             else:
-#                 return {"error": "User not found"}
-#     except psycopg2.Error as e:
-#         print(f"Error fetching user data: {e}")
-#         return {"error": "Error fetching user data"}
-#     finally:
-#         connection.close()
-
 
 
 # Initialize model once
@@ -182,29 +147,6 @@ def ml_api(username):
         logging.error(f"Custom exception occurred: {ce}")
         return jsonify({"error": str(ce)}), 400
 
-
-# @app.route('/ml_api/<string:username>')
-# def ml_api(username):
-#     user_data1,user_data2 = fetch_user_data(username)
-#     interest_field = user_data2['interest_field']
-#     interest_domain = user_data2['interest_domain']
-#     programming_language = user_data2['programming_language']
-#     frameworks = user_data2['frameworks']
-#     cloud_and_database = user_data2['cloud_and_database']
-#     projects = user_data2['projects']
-#     achievements_and_awards = user_data2['achievements_and_awards']
-#     academic_year = user_data2['academic_year']
-#     branch = user_data2['branch']
-
-#     # Get recommendations
-#     results = model_maker.recommend_projects(input_skills=programming_language, input_framework=frameworks, input_tools=cloud_and_database, input_category=interest_field, input_domain=interest_domain)
-    
-#     final_results = {
-#         "project":results[0],
-#         "description":results[1],
-#     }
-
-#     return jsonify(final_results)
 
 
 @app.route('/predict_project', methods=['GET','POST'])
