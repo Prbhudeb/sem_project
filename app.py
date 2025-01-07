@@ -182,10 +182,6 @@ def ml_api(username):
         logging.error(f"Custom exception occurred: {ce}")
         return jsonify({"error": str(ce)}), 400
 
-    except Exception as e:
-        logging.error(f"Unhandled exception occurred: {e}")
-        error_message = error_message_detail(e, sys)
-        return jsonify({"error": error_message}), 500
 
 # @app.route('/ml_api/<string:username>')
 # def ml_api(username):
