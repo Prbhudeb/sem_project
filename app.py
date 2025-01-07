@@ -9,7 +9,7 @@ from psycopg2.extras import RealDictCursor
 
 from src.exception import CustomException
 from src.components.prepare_similarity_matrix import Model_Making
-from src.components import logging
+from src import logging
 
 # Load environment variables
 load_dotenv()
