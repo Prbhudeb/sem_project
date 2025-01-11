@@ -3,6 +3,7 @@ import sys
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
+import pandas as pd
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -123,25 +124,27 @@ def ml_api(username):
 
         # Get recommendations
         logging.info(f"Fetching recommendations for: {username}")
-        results = model_maker.recommend_projects(
+        projects,descriptions = model_maker.recommend_projects(
             input_skills=programming_language,
             input_framework=frameworks,
             input_tools=cloud_and_database,
             input_category=interest_field,
             input_domain=interest_domain
         )
-        if not results:
+        if not projects or not descriptions:
             logging.error("No recommendations found")
             raise CustomException("No recommendations found", sys)
 
         # Format results
         final_results = {
-            "project": results[0],
-            "description": results[1],
+            "project": projects,
+            "description": descriptions,
         }
-
+        
+        final_results = pd.DataFrame(final_results)
+        df_json = final_results.to_json(orient="records")
         logging.info(f"Recommendations successfully generated for: {username}")
-        return jsonify(final_results)
+        return df_json
 
     except CustomException as ce:
         logging.error(f"Custom exception occurred: {ce}")

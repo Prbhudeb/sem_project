@@ -109,7 +109,7 @@ class Model_Making:
                 list(enumerate(similarities)), 
                 key=lambda x: x[1], 
                 reverse=True
-            )[1][0] # [1:top_n+1]  # Skip first index to avoid exact match
+            )[1:6] # [1:top_n+1]  # Skip first index to avoid exact match
 
             # Prepare recommendations
             # recommendations = [
@@ -129,11 +129,18 @@ class Model_Making:
             #         'description': project_description,
             #         'similarity_score': float(score)
             #     })
+            
+            project_name = []
+            project_description = []
 
-            project_name = self.processed_data.loc[index, 'Project Name']
-            project_description = self.processed_data.loc[index, 'Project Description']
+            for idx, score in index:
+                project_name.append(self.processed_data.loc[idx, 'Project Name'])
+                project_description.append(self.processed_data.loc[idx, 'Project Description'])
 
-            return [project_name,project_description] #recommendations
+            # project_name = self.processed_data.loc[index, 'Project Name']
+            # project_description = self.processed_data.loc[index, 'Project Description']
+
+            return project_name,project_description #recommendations
 
         except Exception as e:
             logging.error(f"Error in project recommendation: {str(e)}")
