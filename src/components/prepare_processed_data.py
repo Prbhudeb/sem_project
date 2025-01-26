@@ -47,6 +47,8 @@ class Preprocessing:
             self.processed_data = data[['Project Name', 'Project Description', 'tags']].copy()
 
             # Apply stemming to tags
+            # we can also use lemmatization instead of stemming but due to performance issue we are using stemming
+            # lemmatization is more accurate than stemming but it is slower than stemming 
             self.processed_data['tags'] = self.processed_data['tags'].apply(steming)
             logging.info("Completed tag stemming")
 
