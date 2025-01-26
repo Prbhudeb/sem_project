@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
 import pandas as pd
+from flask_cors import CORS
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -18,6 +19,8 @@ load_dotenv()
 application = Flask(__name__)
 app = application
 
+# Enable CORS
+CORS(app)
 # Database connection settings
 DATABASE_CONFIG = {
     'dbname': os.getenv('DB_NAME'),
