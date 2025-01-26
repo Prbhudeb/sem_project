@@ -44,7 +44,7 @@ class Preprocessing:
             )
 
             # Select relevant columns
-            self.processed_data = data[['Project Name', 'Project Description', 'tags']]
+            self.processed_data = data[['Project Name', 'Project Description', 'tags']].copy()
 
             # Apply stemming to tags
             self.processed_data['tags'] = self.processed_data['tags'].apply(steming)

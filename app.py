@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 from src.exception import CustomException
 from src.components.prepare_similarity_matrix import Model_Making
 from src.logger import logging
-
+from src.api_responce import api_response
 # Load environment variables
 load_dotenv()
 
@@ -144,7 +144,9 @@ def ml_api(username):
         final_results = pd.DataFrame(final_results)
         df_json = final_results.to_json(orient="records")
         logging.info(f"Recommendations successfully generated for: {username}")
-        return df_json
+        # return df_json
+        # return src.api_responce.api_responce(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
+        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
 
     except CustomException as ce:
         logging.error(f"Custom exception occurred: {ce}")
