@@ -12,7 +12,7 @@ class Preprocessing:
         """
         Initialize the Preprocessing class with data path.
         """
-        self.data_path = 'notebook/data/intelligent_project_mapping.csv'
+        self.data_path = 'notebook/data/final_llmGen_data.csv'
         self.processed_data = None
 
     def processing_data(self):

@@ -171,7 +171,7 @@ def predict_project():
             input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
 
             # Get recommendations
-            results = model_maker.recommend_projects(
+            projects,descriptions = model_maker.recommend_projects(
                 input_skills=input_skills, #programming_language
                 input_framework=input_framework,#frameworks
                 input_tools=input_tools,#cloud_and_database
@@ -185,10 +185,10 @@ def predict_project():
             #     print("-" * 40)  # Separator for better readability
             # return render_template('index.html', project=results[0],description = results[1])
 
-            if results:
+            if projects and descriptions:
                 return render_template('index.html', 
-                                     project=results[0],
-                                     description=results[1])
+                                     project=projects[0],
+                                     description=descriptions[0])
             else:
                 return render_template('index.html', 
                                      project="No matching projects found",

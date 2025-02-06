@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Recommendation Input</title>
+    <title>Project Recommendation</title>
     <style>
+        /* General Page Styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -16,18 +17,32 @@
             height: 100vh;
         }
 
-        .form-container {
-            background: #fff;
+        /* Main container with two columns */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 90%;
+            max-width: 98%;
+            background: white;
             padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Left Side (Form) */
+        .form-container {
+            width: 45%;
+            padding: 20px;
+            background: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            margin: 10px;
         }
 
         .form-container h2 {
+            color: #333;
             text-align: center;
             margin-bottom: 20px;
-            color: #333;
         }
 
         .form-group {
@@ -35,88 +50,122 @@
         }
 
         .form-group label {
-            display: block;
             font-weight: bold;
-            margin-bottom: 5px;
             color: #555;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .form-group input,
-        .form-group textarea {
-            width: 95%;
+        .form-group input {
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 5px;
             font-size: 16px;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            height: 100px;
-        }
-
+        /* Submit Button */
         .form-group button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+            transition: background 0.3s ease;
         }
 
         .form-group button:hover {
             background-color: #0056b3;
         }
+
+        /* Right Side (Project Recommendation) */
+        .recommendation-container {
+            width: 50%;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        .recommendation-container h3 {
+            color: #007bff;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .recommendation-container p {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 90%;
+            }
+
+            .form-container,
+            .recommendation-container {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Input Project Features</h2>
-        <form action="/predict_project" method="POST">
-            <!-- <div class="form-group">
-                <label for="project-name">Project Name</label>
-                <input type="text" id="project-name" name="project_name" placeholder="Enter project name" required>
-            </div>
-            <div class="form-group">
-                <label for="project-description">Project Description</label>
-                <textarea id="project-description" name="project_description" placeholder="Enter project description" required></textarea>
-            </div> -->
-            <div class="form-group">
-                <label for="skills">Skills Required</label>
-                <input type="text" id="skills" name="skills" placeholder="Enter skills required" required>
-            </div>
-            <div class="form-group">
-                <label for="framework">Framework</label>
-                <input type="text" id="framework" name="framework" placeholder="Enter framework used">
-            </div>
-            <div class="form-group">
-                <label for="tools">Tools & Technologies</label>
-                <input type="text" id="tools" name="tools" placeholder="Enter tools and technologies">
-            </div>
-            <div class="form-group">
-                <label for="category">Category</label>
-                <input type="text" id="category" name="category" placeholder="Enter categorized category">
-            </div>
-            <div class="form-group">
-                <label for="domain">Domain</label>
-                <input type="text" id="domain" name="domain" placeholder="Enter categorized domain">
-            </div>
-            <div class="form-group">
-                <button type="submit">Submit</button>
-            </div>
-        </form>
-    </div>
 
-    <h2>
-        {% if project %}
-        <div>
-            <h3>{{ project }}</h3>
-            <p>{{ description }}</p>
+    <div class="container">
+        <!-- Left Side: Form -->
+        <div class="form-container">
+            <h2>Find a Project Recommendation</h2>
+            <form action="/predict_project" method="POST">
+                <div class="form-group">
+                    <label for="skills">Skills Required</label>
+                    <input type="text" id="skills" name="skills" placeholder="Enter required skills" required>
+                </div>
+                <div class="form-group">
+                    <label for="framework">Framework</label>
+                    <input type="text" id="framework" name="framework" placeholder="Enter framework used">
+                </div>
+                <div class="form-group">
+                    <label for="tools">Tools & Technologies</label>
+                    <input type="text" id="tools" name="tools" placeholder="Enter tools and technologies">
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" placeholder="Enter category">
+                </div>
+                <div class="form-group">
+                    <label for="domain">Domain</label>
+                    <input type="text" id="domain" name="domain" placeholder="Enter domain">
+                </div>
+                <div class="form-group">
+                    <button type="submit">Get Recommendation</button>
+                </div>
+            </form>
         </div>
-        {% endif %}
-    </h2>
+
+        <!-- Right Side: Project Recommendation -->
+        <div class="recommendation-container">
+            {% if project %}
+                <h3>{{ project }}</h3>
+                <p>{{ description }}</p>
+            {% else %}
+                <h3>No Recommendation Yet</h3>
+                <p>Fill in the form to get a project recommendation.</p>
+            {% endif %}
+        </div>
+    </div>
 
 </body>
 </html>
+
+
+
