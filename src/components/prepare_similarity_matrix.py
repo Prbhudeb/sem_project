@@ -1,7 +1,4 @@
-import os
 import sys
-import numpy as np
-import pandas as pd
 import random
 
 from sklearn.feature_extraction.text import CountVectorizer
@@ -10,6 +7,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src.exception import CustomException
 from src.logger import logging
 from src.components.prepare_processed_data import Preprocessing
+from src.utils import lemmatize_text
+
 
 class Model_Making:
     def __init__(self):
@@ -95,11 +94,12 @@ class Model_Making:
                     input_tags_list.extend([str(x).lower().strip() for x in attr])
             
             # Stem input tags
-            from src.utils import steming
-            stemmed_input_tags = " ".join([steming(tag) for tag in input_tags_list])
+            # from src.utils import steming
+            # stemmed_input_tags = " ".join([steming(tag) for tag in input_tags_list])
+            lemmatized_input_tags = lemmatize_text(" ".join(input_tags_list))
 
             # Vectorize input tags
-            input_vector = self.count_vectorizer.transform([stemmed_input_tags]).toarray()
+            input_vector = self.count_vectorizer.transform([lemmatized_input_tags]).toarray()
 
             # Calculate similarities
             similarities = cosine_similarity(input_vector, self.vector)[0]
@@ -119,12 +119,16 @@ class Model_Making:
 
             project_name = []
             project_description = []
+            project_skills = []
+            index = []
 
             for idx, score in similar_projects:
                 project_name.append(self.processed_data.loc[idx, 'Project Name'])
                 project_description.append(self.processed_data.loc[idx, 'Project Description'])
+                project_skills.append(self.processed_data.loc[idx, 'tags'])
+                index.append(idx)
 
-            return project_name, project_description
+            return project_name, project_description, project_skills, index
         
         except Exception as e:
             logging.error(f"Error in project recommendation: {str(e)}")

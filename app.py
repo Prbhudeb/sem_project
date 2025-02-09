@@ -127,7 +127,7 @@ def ml_api(username):
 
         # Get recommendations
         logging.info(f"Fetching recommendations for: {username}")
-        projects,descriptions = model_maker.recommend_projects(
+        projects,descriptions,skills,index = model_maker.recommend_projects(
             input_skills=programming_language,
             input_framework=frameworks,
             input_tools=cloud_and_database,
@@ -142,6 +142,8 @@ def ml_api(username):
         final_results = {
             "project": projects,
             "description": descriptions,
+            "skills": skills,
+            "index": index
         }
         
         final_results = pd.DataFrame(final_results)
@@ -155,6 +157,22 @@ def ml_api(username):
         logging.error(f"Custom exception occurred: {ce}")
         return jsonify({"error": str(ce)}), 400
 
+
+@app.route('/ml_index/<int:index>')
+def project_details(index):
+    try:
+        # Fetch project details
+        df = pd.read_csv('notebook/data/final_gen_data.csv')
+        project_details = {
+            "project_name": df.loc[index, 'Project Name'],
+            "project_description": df.loc[index, 'Project Description'],
+            "project_skills": df.loc[index, 'Skills Required']
+        }
+        # return jsonify(project_details)
+        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=project_details)
+
+    except Exception as e:
+        raise CustomException(e, sys)
 
 
 @app.route('/predict_project', methods=['GET','POST'])
@@ -171,7 +189,7 @@ def predict_project():
             input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
 
             # Get recommendations
-            projects,descriptions = model_maker.recommend_projects(
+            projects,descriptions,skills,index = model_maker.recommend_projects(
                 input_skills=input_skills, #programming_language
                 input_framework=input_framework,#frameworks
                 input_tools=input_tools,#cloud_and_database
@@ -179,7 +197,7 @@ def predict_project():
                 input_domain=input_domain #interest_domain
             )
             # for i, recommendation in enumerate(results, start=1):
-            #     print(f"Recommendation {i}:")
+            #     print(f"Recommendation {i}:")Prbhudeb
             #     print(f"Project Name: {recommendation[0]}")
             #     print(f"Project Description: {recommendation[1]}")
             #     print("-" * 40)  # Separator for better readability
@@ -188,7 +206,9 @@ def predict_project():
             if projects and descriptions:
                 return render_template('index.html', 
                                      project=projects[0],
-                                     description=descriptions[0])
+                                     description=descriptions[0],
+                                     skills=skills[0],
+                                     index=index[0])
             else:
                 return render_template('index.html', 
                                      project="No matching projects found",
@@ -196,6 +216,9 @@ def predict_project():
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

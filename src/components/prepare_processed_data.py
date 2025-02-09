@@ -1,18 +1,17 @@
 import os
 import sys
 import pandas as pd
-import numpy as np
 
 from src.exception import CustomException
 from src.logger import logging
-from src.utils import steming
+from src.utils import lemmatize_text
 
 class Preprocessing:
     def __init__(self):
         """
         Initialize the Preprocessing class with data path.
         """
-        self.data_path = 'notebook/data/final_llmGen_data.csv'
+        self.data_path = 'notebook/data/final_gen_data.csv'
         self.processed_data = None
 
     def processing_data(self):
@@ -44,12 +43,12 @@ class Preprocessing:
             )
 
             # Select relevant columns
-            self.processed_data = data[['Project Name', 'Project Description', 'tags']].copy()
+            self.processed_data = data[['Project Name', 'Project Description', 'tags','Skills Required']].copy()
 
             # Apply stemming to tags
             # we can also use lemmatization instead of stemming but due to performance issue we are using stemming
             # lemmatization is more accurate than stemming but it is slower than stemming 
-            self.processed_data['tags'] = self.processed_data['tags'].apply(steming)
+            self.processed_data['tags'] = self.processed_data['tags'].apply(lemmatize_text)
             logging.info("Completed tag stemming")
 
             logging.info(f"Processed data shape: {self.processed_data.shape}")

@@ -1,12 +1,10 @@
 import os
 import sys
 
-import numpy as np 
-import pandas as pd
 # import dill
 import pickle
 from nltk.stem.porter import PorterStemmer
-
+from nltk.stem import WordNetLemmatizer
 
 from src.exception import CustomException
 
@@ -40,3 +38,10 @@ def load_object(file_path):
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+
+
+lemmatizer = WordNetLemmatizer()
+
+def lemmatize_text(text):
+    return ' '.join([lemmatizer.lemmatize(word) for word in text.split()])
