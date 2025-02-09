@@ -106,7 +106,7 @@ class Model_Making:
 
             # Get top N similar projects
             similar_projects = sorted(
-                list(enumerate(similarities)), 
+                list(enumerate(similarities)),
                 key=lambda x: x[1], 
                 reverse=True
             )[1:top_n + 6]  # Get extra results to allow shuffling

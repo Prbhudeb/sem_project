@@ -149,8 +149,7 @@ def ml_api(username):
         final_results = pd.DataFrame(final_results)
         df_json = final_results.to_json(orient="records")
         logging.info(f"Recommendations successfully generated for: {username}")
-        # return df_json
-        # return src.api_responce.api_responce(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
+
         return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
 
     except CustomException as ce:
@@ -168,8 +167,19 @@ def project_details(index):
             "project_description": df.loc[index, 'Project Description'],
             "project_skills": df.loc[index, 'Skills Required']
         }
-        # return jsonify(project_details)
-        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=project_details.to_json(orient="records"))
+
+        # f_data = pd.DataFrame(project_details)
+
+        if isinstance(project_details, dict):
+            project_details = [project_details]  # Convert to list if it's a single dictionary
+
+        try:
+            f_data = pd.DataFrame(project_details)  # Now safe
+            json_data = f_data.to_json(orient="records")  # Convert to JSON
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=json_data)
 
     except Exception as e:
         raise CustomException(e, sys)
