@@ -169,7 +169,7 @@ def project_details(index):
             "project_skills": df.loc[index, 'Skills Required']
         }
         # return jsonify(project_details)
-        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=project_details)
+        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=project_details.to_json(orient="records"))
 
     except Exception as e:
         raise CustomException(e, sys)
