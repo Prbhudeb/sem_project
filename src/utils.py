@@ -3,12 +3,16 @@ import sys
 
 # import dill
 import pickle
+import nltk
 from nltk.stem.porter import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 
 from src.exception import CustomException
 
 ps = PorterStemmer()
+
+nltk.download('wordnet')
+
 
 def save_object(file_path, obj):
     try:
