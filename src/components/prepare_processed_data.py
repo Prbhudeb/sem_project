@@ -11,7 +11,7 @@ class Preprocessing:
         """
         Initialize the Preprocessing class with data path.
         """
-        self.data_path_project = 'notebook/data/final_gen_data.xlsx'
+        self.data_path_project = 'notebook/data/final_data_project.csv'
         self.processed_data = None
 
     def processing_data_project(self):
