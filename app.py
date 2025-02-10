@@ -265,19 +265,19 @@ def course_api(username):
         # Get recommendations
         logging.info(f"Fetching recommendations for: {username}")
         skills = programming_language + ',' + frameworks + ',' + cloud_and_database + ',' + interest_field
-        course,course_descriptoin,url = ModelMakingCourse.recommend_courses(
+        course,course_description,url = ModelMakingCourse.recommend_courses(
             self=course_maker,
             input_skills=skills,
             input_domain=interest_domain
         )
-        if not course or not course_descriptoin:
+        if not course or not course_description:
             logging.error("No recommendations found")
             raise CustomException("No recommendations found", sys)
 
         # Format results
         final_results = {
             "course": course,
-            "course_descriptoin": course_descriptoin,
+            "course_description": course_description,
             "url":url
         }
         
