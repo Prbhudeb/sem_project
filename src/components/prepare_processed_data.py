@@ -29,7 +29,7 @@ class Preprocessing:
                 raise FileNotFoundError(f"Data file not found at {self.data_path_project}")
 
             # Read the CSV file
-            data = pd.read_excel(self.data_path_project)
+            data = pd.read_csv(self.data_path_project)
             logging.info(f"Loaded data from {self.data_path_project}")
 
             # Combine tags from multiple columns with error handling
