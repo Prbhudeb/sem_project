@@ -11,10 +11,10 @@ class Preprocessing:
         """
         Initialize the Preprocessing class with data path.
         """
-        self.data_path = 'notebook/data/final_gen_data.csv'
+        self.data_path_project = 'notebook/data/final_gen_data.csv'
         self.processed_data = None
 
-    def processing_data(self):
+    def processing_data_project(self):
         """
         Process the project data by combining tags and applying stemming.
         
@@ -25,12 +25,12 @@ class Preprocessing:
             logging.info("Starting data preprocessing...")
 
             # Validate data file path
-            if not os.path.exists(self.data_path):
-                raise FileNotFoundError(f"Data file not found at {self.data_path}")
+            if not os.path.exists(self.data_path_project):
+                raise FileNotFoundError(f"Data file not found at {self.data_path_project}")
 
             # Read the CSV file
-            data = pd.read_csv(self.data_path)
-            logging.info(f"Loaded data from {self.data_path}")
+            data = pd.read_csv(self.data_path_project)
+            logging.info(f"Loaded data from {self.data_path_project}")
 
             # Combine tags from multiple columns with error handling
             data['tags'] = (
@@ -58,3 +58,69 @@ class Preprocessing:
         except Exception as e:
             logging.error(f"Error in data processing: {str(e)}")
             raise CustomException(e, sys)
+
+
+class PreprocessingCourse:
+    def __init__(self, data_path_course='notebook/data/Coursera.csv'):
+        self.data_path_course = data_path_course
+
+    def preprocessing_data_course(self):
+        """
+        Process course data by cleaning and creating a 'tags' column.
+        """
+        try:
+            logging.info("Starting data preprocessing...")
+
+            if not os.path.exists(self.data_path_course):
+                raise FileNotFoundError(f"Data file not found at {self.data_path_course}")
+
+            # Read the CSV file
+            data = pd.read_csv(self.data_path_course)
+            logging.info(f"Loaded data from {self.data_path_course}, shape: {data.shape}")
+
+            # Select necessary columns
+            selected_columns = ['Course Name', 'Difficulty Level', 'Course Description', 'Skills', 'Course URL']
+            if not all(col in data.columns for col in selected_columns):
+                raise ValueError(f"CSV file missing required columns: {selected_columns}")
+
+            data = data[selected_columns].copy()
+
+            # Clean text data using regex
+            text_cleaning_rules = [
+                (r'\s+', ' '),  # Replace multiple spaces with a single space
+                (r'[,]+', ','),  # Reduce multiple commas
+                (r'[_:]', ''),  # Remove underscores and colons
+                (r'[()]', '')  # Remove parentheses
+            ]
+
+            for col in ['Course Name', 'Course Description']:
+                for pattern, replacement in text_cleaning_rules:
+                    data[col] = data[col].str.replace(pattern, replacement, regex=True)
+
+            data['Skills'] = data['Skills'].str.replace('[()]', '', regex=True)
+
+            # Create 'tags' column
+            data['tags'] = (
+                data['Course Name'] + " " +
+                data['Difficulty Level'] + " " +
+                data['Course Description'] + " " +
+                data['Skills']
+            )
+
+            # Rename columns
+            new_df = data[['Course Name', 'tags', 'Course URL', 'Course Description']].copy()
+            new_df.rename(columns={'Course Name': 'course_name'}, inplace=True)
+
+            # Lowercase and clean 'tags' column
+            new_df['tags'] = new_df['tags'].str.lower().str.replace(',', ' ', regex=False)
+
+            # Apply lemmatization
+            new_df['tags'] = new_df['tags'].apply(lemmatize_text)
+            logging.info(f"Processed data shape: {new_df.shape}")
+
+            return new_df
+
+        except Exception as e:
+            logging.error(f"Error in data processing: {str(e)}")
+            raise CustomException(e, sys)
+

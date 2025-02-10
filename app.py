@@ -10,7 +10,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from src.exception import CustomException
+from src.components.prepare_processed_data import Preprocessing
+from src.components.prepare_processed_data import PreprocessingCourse
 from src.components.prepare_similarity_matrix import Model_Making
+from src.components.prepare_similarity_matrix import ModelMakingCourse
 from src.logger import logging
 from src.api_responce import api_response
 # Load environment variables
@@ -91,6 +94,9 @@ def fetch_user_data(username):
 # Initialize model once
 model_maker = Model_Making()
 model_maker.model_building()
+
+course_maker = ModelMakingCourse()
+course_maker.model_building_course()
 
 @app.route('/')
 def index():
@@ -223,6 +229,96 @@ def predict_project():
                 return render_template('index.html', 
                                      project="No matching projects found",
                                      description="")
+
+    except Exception as e:
+        raise CustomException(e, sys)
+    
+@app.route('/course/<string:username>')
+def course_api(username):
+    try:
+        logging.info(f"API call for user: {username}")
+
+        # Fetch user data
+        user_data1, user_data2 = fetch_user_data(username)
+        if not user_data1 or not user_data2:
+            logging.error(f"User data not found for username: {username}")
+            raise CustomException(f"User data not found for username: {username}", sys)
+
+        logging.info(f"User data successfully fetched for: {username}")
+
+        # Extract user-specific details
+        interest_field = user_data2.get('interest_field', None)
+        interest_domain = user_data2.get('interest_domain', None)
+        programming_language = user_data2.get('programming_language', None)
+        frameworks = user_data2.get('frameworks', None)
+        cloud_and_database = user_data2.get('cloud_and_database', None)
+        projects = user_data2.get('projects', None)
+        achievements_and_awards = user_data2.get('achievements_and_awards', None)
+        academic_year = user_data2.get('academic_year', None)
+        branch = user_data2.get('branch', None)
+
+        # Validate required fields
+        if not all([interest_field, interest_domain, programming_language, frameworks]):
+            logging.error(f"Incomplete user data for username: {username}")
+            raise CustomException(f"Incomplete user data for username: {username}", sys)
+
+        # Get recommendations
+        logging.info(f"Fetching recommendations for: {username}")
+        skills = programming_language + ',' + frameworks + ',' + cloud_and_database + ',' + interest_field
+        course,course_descriptoin,url = ModelMakingCourse.recommend_courses(
+            self=course_maker,
+            input_skills=skills,
+            input_domain=interest_domain
+        )
+        if not course or not course_descriptoin:
+            logging.error("No recommendations found")
+            raise CustomException("No recommendations found", sys)
+
+        # Format results
+        final_results = {
+            "course": course,
+            "course_descriptoin": course_descriptoin,
+            "url":url
+        }
+        
+        final_results = pd.DataFrame(final_results)
+        df_json = final_results.to_json(orient="records")
+        logging.info(f"Recommendations successfully generated for: {username}")
+
+        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
+
+    except CustomException as ce:
+        logging.error(f"Custom exception occurred: {ce}")
+        return jsonify({"error": str(ce)}), 400
+    
+@app.route('/predict_course', methods=['GET','POST'])
+def predict_course():
+    try:
+        if request.method == 'GET':
+            return render_template('html_course.html')
+        else:
+            # Collect input attributes
+            input_skills = request.form.get('skills', '').split(",") if request.form.get('skills') else []
+            input_domain = request.form.get('domain', '').split(",") if request.form.get('domain') else []
+
+            # Get recommendations
+            course,course_descriptions,url = course_maker.recommend_courses(
+                input_skills=input_skills, #programming_language
+                input_domain=input_domain #interest_domain
+            )
+
+            # print(course,course_descriptions,url)
+
+            if course and course_descriptions:
+                return render_template('html_course.html', 
+                                     course=course[0],
+                                     course_description=course_descriptions[0],
+                                     url=url[0]
+                )
+            else:
+                return render_template('html_course.html', 
+                                     course="No matching course found",
+                                     course_description="")
 
     except Exception as e:
         raise CustomException(e, sys)

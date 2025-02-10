@@ -1,5 +1,6 @@
 import os
 import sys
+import pandas as pd
 
 # import dill
 import pickle
@@ -25,6 +26,14 @@ def save_object(file_path, obj):
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+def load_data(file_path):
+        """
+        Load CSV data from the given file path.
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"Data file not found: {file_path}")
+        return pd.read_csv(file_path)
     
 def steming(text):
     try:

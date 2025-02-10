@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src.exception import CustomException
 from src.logger import logging
 from src.components.prepare_processed_data import Preprocessing
+from src.components.prepare_processed_data import PreprocessingCourse
 from src.utils import lemmatize_text
 
 
@@ -34,7 +35,7 @@ class Model_Making:
             preprocessor = Preprocessing()
 
             # Get processed data
-            self.processed_data = preprocessor.processing_data()
+            self.processed_data = preprocessor.processing_data_project()
             logging.info(f"Processed data shape: {self.processed_data.shape}")
             
             self.processed_data = self.processed_data.reset_index(drop=True)
@@ -68,7 +69,7 @@ class Model_Making:
     
     def recommend_projects(self, input_skills=None, input_framework=None, 
                        input_tools=None, input_category=None, 
-                       input_domain=None, top_n=5):
+                       input_domain=None, top_n=20):
         """
         Recommend projects based on input attributes with randomness.
         
@@ -133,83 +134,98 @@ class Model_Making:
         except Exception as e:
             logging.error(f"Error in project recommendation: {str(e)}")
             raise CustomException(e, sys)
-
-    # def recommend_projects(self, input_skills=None, input_framework=None, 
-    #                        input_tools=None, input_category=None, 
-    #                        input_domain=None, top_n=5):
-    #     """
-    #     Recommend projects based on input attributes.
         
-    #     Parameters:
-    #     - Various input attributes for project recommendation
-    #     - top_n: Number of top recommendations to return
-        
-    #     Returns:
-    #     - List of recommended project details
-    #     """
-    #     try:
-    #         # Ensure model is built
-    #         if self.vector is None or self.processed_data is None:
-    #             model_data = self.model_building()
-    #             self.vector = model_data['vector']
-    #             self.processed_data = model_data['processed_data']
-    #             self.similarity_matrix = model_data['similarity_matrix']
 
-    #         # Prepare input tags
-    #         input_tags_list = []
-    #         for attr in [input_skills, input_framework, input_tools, input_category, input_domain]:
-    #             if attr and attr != ['']:
-    #                 input_tags_list.extend([str(x).lower().strip() for x in attr])
-            
-    #         # Stem input tags
-    #         from src.utils import steming
-    #         stemmed_input_tags = " ".join([steming(tag) for tag in input_tags_list])
+class ModelMakingCourse:
+    def __init__(self):
+        self.vector = None
+        self.processed_data = None
+        self.similarity_matrix = None
+        self.count_vectorizer = None
 
-    #         # Vectorize input tags
-    #         input_vector = self.count_vectorizer.transform([stemmed_input_tags]).toarray()
+    def model_building_course(self):
+        """
+        Build the course recommendation model by processing data and computing similarity matrix.
+        """
+        try:
+            preprocessor = PreprocessingCourse()
+            new_df = preprocessor.preprocessing_data_course()
 
-    #         # Calculate similarities
-    #         similarities = cosine_similarity(input_vector, self.vector)[0]
+            cv = CountVectorizer(max_features=5000, stop_words='english')
+            vectors = cv.fit_transform(new_df['tags']).toarray()
+            similarity_matrix = cosine_similarity(vectors)
 
-    #         # Get top N similar projects
-    #         #similar_projects = 
-    #         index = sorted(
-    #             list(enumerate(similarities)), 
-    #             key=lambda x: x[1], 
-    #             reverse=True
-    #         )[1:6] # [1:top_n+1]  # Skip first index to avoid exact match
+            return {
+                'vector': vectors,
+                'processed_data': new_df,
+                'similarity_matrix': similarity_matrix,
+                'cv': cv
+            }
 
-    #         # Prepare recommendations
-    #         # recommendations = [
-    #         #     [
-    #         #         self.processed_data.iloc[idx]['Project Name'],
-    #         #         self.processed_data.iloc[idx]['Project Description']
-    #         #     ]
-    #         #     for idx, score in similar_projects
-    #         # ]
+        except Exception as e:
+            logging.error(f"Error in model building: {str(e)}")
+            raise CustomException(e, sys)
 
-    #         # recommendations = []
-    #         # for idx, score in similar_projects:
-    #         #     project_name = self.processed_data.iloc[idx]['Project Name']
-    #         #     project_description = self.processed_data.iloc[idx]['Project Description']
-    #         #     recommendations.append({
-    #         #         'name': project_name,
-    #         #         'description': project_description,
-    #         #         'similarity_score': float(score)
-    #         #     })
-            
-    #         project_name = []
-    #         project_description = []
+    def recommend_courses(self, input_skills=None, input_difficulty=None, input_domain=None, top_n=20):
+        """
+        Recommend courses based on input attributes with randomness.
+        """
+        try:
+            # Ensure model is built
+            if self.vector is None or self.processed_data is None:
+                model_data = self.model_building_course()
+                self.vector = model_data['vector']
+                self.processed_data = model_data['processed_data']
+                self.similarity_matrix = model_data['similarity_matrix']
+                self.count_vectorizer = model_data['cv']
 
-    #         for idx, score in index:
-    #             project_name.append(self.processed_data.loc[idx, 'Project Name'])
-    #             project_description.append(self.processed_data.loc[idx, 'Project Description'])
+            # Validate processed data
+            required_columns = {'course_name', 'Course Description', 'Course URL'}
+            if not required_columns.issubset(set(self.processed_data.columns)):
+                raise ValueError("Processed data does not contain required columns")
 
-    #         # project_name = self.processed_data.loc[index, 'Project Name']
-    #         # project_description = self.processed_data.loc[index, 'Project Description']
+            # Prepare input tags
+            input_tags_list = [
+                str(x).lower().strip()
+                for attr in [input_skills, input_difficulty, input_domain]
+                if attr and attr != ['']
+                for x in attr
+            ]
 
-    #         return project_name,project_description #recommendations
+            if not input_tags_list:
+                logging.warning("No valid input attributes provided for recommendation.")
+                return [], [], []
 
-        # except Exception as e:
-        #     logging.error(f"Error in project recommendation: {str(e)}")
-        #     raise CustomException(e, sys)
+            # Apply lemmatization
+            lemmatized_input_tags = lemmatize_text(" ".join(input_tags_list))
+
+            # Vectorize input tags
+            input_vector = self.count_vectorizer.transform([lemmatized_input_tags]).toarray()
+
+            # Calculate similarities
+            similarities = cosine_similarity(input_vector, self.vector)[0]
+
+            # Get top N similar courses
+            similar_courses = sorted(
+                enumerate(similarities),
+                key=lambda x: x[1],
+                reverse=True
+            )[1:top_n + 6]  # Extra results for better randomness
+
+            # Shuffle the top results for randomness
+            random.shuffle(similar_courses)
+            similar_courses = similar_courses[:top_n]
+
+            course_name, course_description, course_url = [], [], []
+            for idx, score in similar_courses:
+                if idx < len(self.processed_data):
+                    course_name.append(self.processed_data.loc[idx, 'course_name'])
+                    course_description.append(self.processed_data.loc[idx, 'Course Description'])
+                    course_url.append(self.processed_data.loc[idx, 'Course URL'])
+
+            return course_name, course_description, course_url
+
+        except Exception as e:
+            logging.error(f"Error in course recommendation: {str(e)}")
+            raise CustomException(e, sys)
+
