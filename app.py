@@ -233,6 +233,28 @@ def predict_project():
     except Exception as e:
         raise CustomException(e, sys)
     
+@app.route('/course_api', methods='POST')
+def course():
+    skills_str = request.form.get('skills', '')  # Get raw comma-separated string
+    
+    course,description,url = ModelMakingCourse.recommend_courses(
+        self=course_maker,
+        input_skills=skills_str,
+        input_domain='Computer Science'
+    )
+    final_results = {
+            "course": course,
+            "course_description": description,
+            "url":url
+    }
+        
+    final_results = pd.DataFrame(final_results)
+    df_json = final_results.to_json(orient="records")
+
+    return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=df_json)
+
+
+    
 @app.route('/course/<string:username>')
 def course_api(username):
     try:
