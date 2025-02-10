@@ -233,7 +233,7 @@ def predict_project():
     except Exception as e:
         raise CustomException(e, sys)
     
-@app.route('/course_api', methods='POST')
+@app.route('/course_api', methods=['POST'])
 def course():
     skills_str = request.form.get('skills', '')  # Get raw comma-separated string
     

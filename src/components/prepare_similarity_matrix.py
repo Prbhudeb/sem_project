@@ -126,7 +126,7 @@ class Model_Making:
             for idx, score in similar_projects:
                 project_name.append(self.processed_data.loc[idx, 'Project Name'])
                 project_description.append(self.processed_data.loc[idx, 'Project Description'])
-                project_skills.append(self.processed_data.loc[idx, 'tags'])
+                project_skills.append(self.processed_data.loc[idx, 'Skills Required'])
                 index.append(idx)
 
             return project_name, project_description, project_skills, index
