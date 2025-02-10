@@ -11,7 +11,7 @@ class Preprocessing:
         """
         Initialize the Preprocessing class with data path.
         """
-        self.data_path_project = 'notebook/data/final_gen_data.csv'
+        self.data_path_project = 'notebook/data/final_gen_data.xlsx'
         self.processed_data = None
 
     def processing_data_project(self):
@@ -29,7 +29,7 @@ class Preprocessing:
                 raise FileNotFoundError(f"Data file not found at {self.data_path_project}")
 
             # Read the CSV file
-            data = pd.read_csv(self.data_path_project)
+            data = pd.read_excel(self.data_path_project)
             logging.info(f"Loaded data from {self.data_path_project}")
 
             # Combine tags from multiple columns with error handling
