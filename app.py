@@ -11,7 +11,7 @@ from psycopg2.extras import RealDictCursor
 
 from src.exception import CustomException
 from src.components.prepare_similarity_matrix import Model_Making
-from src.components.prepare_similarity_matrix import ModelMakingCourse
+# from src.components.prepare_similarity_matrix import ModelMakingCourse
 from src.logger import logging
 from src.api_responce import api_response
 # Load environment variables
