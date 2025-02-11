@@ -136,96 +136,96 @@ class Model_Making:
             raise CustomException(e, sys)
         
 
-class ModelMakingCourse:
-    def __init__(self):
-        self.vector = None
-        self.processed_data = None
-        self.similarity_matrix = None
-        self.count_vectorizer = None
+# class ModelMakingCourse:
+#     def __init__(self):
+#         self.vector = None
+#         self.processed_data = None
+#         self.similarity_matrix = None
+#         self.count_vectorizer = None
 
-    def model_building_course(self):
-        """
-        Build the course recommendation model by processing data and computing similarity matrix.
-        """
-        try:
-            preprocessor = PreprocessingCourse()
-            new_df = preprocessor.preprocessing_data_course()
+#     def model_building_course(self):
+#         """
+#         Build the course recommendation model by processing data and computing similarity matrix.
+#         """
+#         try:
+#             preprocessor = PreprocessingCourse()
+#             new_df = preprocessor.preprocessing_data_course()
 
-            cv = CountVectorizer(max_features=5000, stop_words='english')
-            vectors = cv.fit_transform(new_df['tags']).toarray()
-            similarity_matrix = cosine_similarity(vectors)
+#             cv = CountVectorizer(max_features=5000, stop_words='english')
+#             vectors = cv.fit_transform(new_df['tags']).toarray()
+#             similarity_matrix = cosine_similarity(vectors)
 
-            return {
-                'vector': vectors,
-                'processed_data': new_df,
-                'similarity_matrix': similarity_matrix,
-                'cv': cv
-            }
+#             return {
+#                 'vector': vectors,
+#                 'processed_data': new_df,
+#                 'similarity_matrix': similarity_matrix,
+#                 'cv': cv
+#             }
 
-        except Exception as e:
-            logging.error(f"Error in model building: {str(e)}")
-            raise CustomException(e, sys)
+#         except Exception as e:
+#             logging.error(f"Error in model building: {str(e)}")
+#             raise CustomException(e, sys)
 
-    def recommend_courses(self, input_skills=None, input_difficulty=None, input_domain=None, top_n=20):
-        """
-        Recommend courses based on input attributes with randomness.
-        """
-        try:
-            # Ensure model is built
-            if self.vector is None or self.processed_data is None:
-                model_data = self.model_building_course()
-                self.vector = model_data['vector']
-                self.processed_data = model_data['processed_data']
-                self.similarity_matrix = model_data['similarity_matrix']
-                self.count_vectorizer = model_data['cv']
+#     def recommend_courses(self, input_skills=None, input_difficulty=None, input_domain=None, top_n=20):
+#         """
+#         Recommend courses based on input attributes with randomness.
+#         """
+#         try:
+#             # Ensure model is built
+#             if self.vector is None or self.processed_data is None:
+#                 model_data = self.model_building_course()
+#                 self.vector = model_data['vector']
+#                 self.processed_data = model_data['processed_data']
+#                 self.similarity_matrix = model_data['similarity_matrix']
+#                 self.count_vectorizer = model_data['cv']
 
-            # Validate processed data
-            required_columns = {'course_name', 'Course Description', 'Course URL'}
-            if not required_columns.issubset(set(self.processed_data.columns)):
-                raise ValueError("Processed data does not contain required columns")
+#             # Validate processed data
+#             required_columns = {'course_name', 'Course Description', 'Course URL'}
+#             if not required_columns.issubset(set(self.processed_data.columns)):
+#                 raise ValueError("Processed data does not contain required columns")
 
-            # Prepare input tags
-            input_tags_list = [
-                str(x).lower().strip()
-                for attr in [input_skills, input_difficulty, input_domain]
-                if attr and attr != ['']
-                for x in attr
-            ]
+#             # Prepare input tags
+#             input_tags_list = [
+#                 str(x).lower().strip()
+#                 for attr in [input_skills, input_difficulty, input_domain]
+#                 if attr and attr != ['']
+#                 for x in attr
+#             ]
 
-            if not input_tags_list:
-                logging.warning("No valid input attributes provided for recommendation.")
-                return [], [], []
+#             if not input_tags_list:
+#                 logging.warning("No valid input attributes provided for recommendation.")
+#                 return [], [], []
 
-            # Apply lemmatization
-            lemmatized_input_tags = lemmatize_text(" ".join(input_tags_list))
+#             # Apply lemmatization
+#             lemmatized_input_tags = lemmatize_text(" ".join(input_tags_list))
 
-            # Vectorize input tags
-            input_vector = self.count_vectorizer.transform([lemmatized_input_tags]).toarray()
+#             # Vectorize input tags
+#             input_vector = self.count_vectorizer.transform([lemmatized_input_tags]).toarray()
 
-            # Calculate similarities
-            similarities = cosine_similarity(input_vector, self.vector)[0]
+#             # Calculate similarities
+#             similarities = cosine_similarity(input_vector, self.vector)[0]
 
-            # Get top N similar courses
-            similar_courses = sorted(
-                enumerate(similarities),
-                key=lambda x: x[1],
-                reverse=True
-            )[1:top_n + 6]  # Extra results for better randomness
+#             # Get top N similar courses
+#             similar_courses = sorted(
+#                 enumerate(similarities),
+#                 key=lambda x: x[1],
+#                 reverse=True
+#             )[1:top_n + 6]  # Extra results for better randomness
 
-            # Shuffle the top results for randomness
-            random.shuffle(similar_courses)
-            similar_courses = similar_courses[:top_n]
+#             # Shuffle the top results for randomness
+#             random.shuffle(similar_courses)
+#             similar_courses = similar_courses[:top_n]
 
-            course_name, course_description, course_url = [], [], []
-            for idx, score in similar_courses:
-                if idx < len(self.processed_data):
-                    course_name.append(self.processed_data.loc[idx, 'course_name'])
-                    course_description.append(self.processed_data.loc[idx, 'Course Description'])
-                    course_url.append(self.processed_data.loc[idx, 'Course URL'])
+#             course_name, course_description, course_url = [], [], []
+#             for idx, score in similar_courses:
+#                 if idx < len(self.processed_data):
+#                     course_name.append(self.processed_data.loc[idx, 'course_name'])
+#                     course_description.append(self.processed_data.loc[idx, 'Course Description'])
+#                     course_url.append(self.processed_data.loc[idx, 'Course URL'])
 
-            return course_name, course_description, course_url
+#             return course_name, course_description, course_url
 
-        except Exception as e:
-            logging.error(f"Error in course recommendation: {str(e)}")
-            raise CustomException(e, sys)
+#         except Exception as e:
+#             logging.error(f"Error in course recommendation: {str(e)}")
+#             raise CustomException(e, sys)
 

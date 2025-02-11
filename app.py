@@ -10,8 +10,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 from src.exception import CustomException
-from src.components.prepare_processed_data import Preprocessing
-from src.components.prepare_processed_data import PreprocessingCourse
 from src.components.prepare_similarity_matrix import Model_Making
 from src.components.prepare_similarity_matrix import ModelMakingCourse
 from src.logger import logging

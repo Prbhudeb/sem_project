@@ -1,4 +1,3 @@
-numpy
 pandas
 openpyxl
 nltk
@@ -10,5 +9,3 @@ psycopg2
 python-dotenv
 gunicorn
 flask-cors
-uvicorn[standard]
--e .
