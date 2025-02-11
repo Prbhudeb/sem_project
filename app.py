@@ -164,7 +164,7 @@ def ml_api(username):
 @app.route('/ml_index/<int:index>')
 def project_details(index):
     try:
-        file_path = 'notebook/data/final_gen_data.csv'
+        file_path = 'notebook/data/final_data_project.csv'
 
         # ✅ Check if CSV file exists
         if not os.path.exists(file_path):
