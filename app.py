@@ -93,8 +93,8 @@ def fetch_user_data(username):
 model_maker = Model_Making()
 model_maker.model_building()
 
-course_maker = ModelMakingCourse()
-course_maker.model_building_course()
+# course_maker = ModelMakingCourse()
+# course_maker.model_building_course()
 
 @app.route('/')
 def index():
