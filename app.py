@@ -164,29 +164,28 @@ def ml_api(username):
 @app.route('/ml_index/<int:index>')
 def project_details(index):
     try:
-        # Fetch project details
-        df = pd.read_csv('notebook/data/final_gen_data.csv')
+        file_path = 'notebook/data/final_gen_data.csv'
+
+        # ✅ Check if CSV file exists
+        if not os.path.exists(file_path):
+            return api_response(success=False, message="CSV file not found", response_code=500, data={})
+
+        df = pd.read_csv(file_path)
+
+        # ✅ Check if index is valid
+        if index not in df.index:
+            return api_response(success=False, message="Index out of range", response_code=400, data={})
+
         project_details = {
-            "project_name": df.loc[index, 'Project Name'],
-            "project_description": df.loc[index, 'Project Description'],
-            "project_skills": df.loc[index, 'Skills Required']
+            "project_name": df.at[index, 'Project Name'],
+            "project_description": df.at[index, 'Project Description'],
+            "project_skills": df.at[index, 'Skills Required']
         }
 
-        # f_data = pd.DataFrame(project_details)
-
-        if isinstance(project_details, dict):
-            project_details = [project_details]  # Convert to list if it's a single dictionary
-
-        try:
-            f_data = pd.DataFrame(project_details)  # Now safe
-            json_data = f_data.to_json(orient="records")  # Convert to JSON
-        except Exception as e:
-            raise CustomException(e, sys)
-        
-        return api_response(success=True, message="Recommendations successfully generated",response_code = 200 ,data=json_data)
+        return api_response(success=True, message="Success", response_code=200, data=project_details)
 
     except Exception as e:
-        raise CustomException(e, sys)
+        return api_response(success=False, message=str(e), response_code=500, data={})
 
 
 # @app.route('/predict_project', methods=['GET','POST'])
