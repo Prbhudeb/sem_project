@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from src.exception import CustomException
 from src.logger import logging
 from src.components.prepare_processed_data import Preprocessing
-from src.components.prepare_processed_data import PreprocessingCourse
+# from src.components.prepare_processed_data import PreprocessingCourse
 from src.utils import lemmatize_text
 
 
